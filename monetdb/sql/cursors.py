@@ -486,13 +486,19 @@ class Cursor(object):
 
         The contents of `file` must end with `record_separator`.
         """
-        offset = "OFFSET {}".format(offset) if offset else ""
         if offset and num_records:
-            num_records = "{} {} RECORDS".format(num_records, offset)
+            num_records = "{} OFFSET {} RECORDS".format(num_records, offset)
         elif not offset and num_records:
             num_records = "{} RECORDS".format(num_records)
+        elif offset and not num_records:
+            num_records = "OFFSET {}".format(offset)
+        else:
+            raise Exception("Invalid option for num_records and offset!")
+        command = "COPY {} INTO {} FROM STDIN DELIMITERS '{}', '{}'".format(
+            num_records, table, field_separator,
+            record_separator)
         command = "COPY {} {} INTO {} FROM STDIN DELIMITERS '{}', '{}'".format(
-            num_records, offset, table, field_separator,
+            num_records, table, field_separator,
             record_separator)
         if string_quote is not None:
             command += ", '{}'".format(string_quote)
