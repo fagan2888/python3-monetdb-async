@@ -481,11 +481,12 @@ class Cursor(object):
         self.__store_result(block)
 
     def copy_from(self, file, table, field_separator=",", record_separator="\\n",
-                  string_quote=None, null_string=None, locked=False, offset=None, num_records=None):
+                  string_quote=None, null_string=None, locked=False, offset=None, num_records=None, cols_str=None):
         """Copy data into table from file-like object
 
         The contents of `file` must end with `record_separator`.
         """
+        cols_str = cols_str if cols_str else ""
         if offset and num_records:
             num_records = "{} OFFSET {} RECORDS".format(num_records, offset)
         elif not offset and num_records:
@@ -494,11 +495,8 @@ class Cursor(object):
             num_records = "OFFSET {}".format(offset)
         else:
             raise Exception("Invalid option for num_records and offset!")
-        command = "COPY {} INTO {} FROM STDIN DELIMITERS '{}', '{}'".format(
-            num_records, table, field_separator,
-            record_separator)
-        command = "COPY {} {} INTO {} FROM STDIN DELIMITERS '{}', '{}'".format(
-            num_records, table, field_separator,
+        command = "COPY {} INTO {}{} FROM STDIN DELIMITERS '{}', '{}'".format(
+            num_records, table, cols_str, field_separator,
             record_separator)
         if string_quote is not None:
             command += ", '{}'".format(string_quote)
