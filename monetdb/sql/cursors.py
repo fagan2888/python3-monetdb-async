@@ -346,7 +346,11 @@ class Cursor(object):
                 self.messages.append((Warning, line[1:]))
 
             elif line.startswith(mapi.MSG_QTABLE):
-                (self.__query_id, rowcount, columns, tuples) = line[2:].split()
+                try:
+                    (self.__query_id, rowcount, columns, tuples) = line[2:].split()
+                except ValueError:
+                    (self.__query_id, rowcount, columns, tuples, extras) = line[2:].split()
+
 
                 columns = int(columns)   # number of columns in result
                 self.rowcount = int(rowcount)  # total number of rows
@@ -481,12 +485,25 @@ class Cursor(object):
         self.__store_result(block)
 
     def copy_from(self, file, table, field_separator=",", record_separator="\\n",
-                  string_quote=None, null_string=None, locked=False, offset=None, num_records=None, cols_str=None):
+                  string_quote=None, null_string=None, locked=False, offset=None, num_records=None, cols=None, table_col_order=None):
         """Copy data into table from file-like object
 
         The contents of `file` must end with `record_separator`.
         """
-        cols_str = cols_str if cols_str else ""
+
+        if cols is not None:
+            unused_cols = set(table_col_order) - set(cols)
+            for not_used in unused_cols:
+                table_col_order.remove(not_used)
+
+            input_cols = [u'"{}"'.format(col) for col in cols]
+            input_cols_str = u"({})".format(u",".join(input_cols))
+        else:
+            input_cols_str = ""
+
+        table_col_str = [u'"{}"'.format(col) for col in table_col_order]
+        table_col_str = u"({})".format(u",".join(table_col_str))
+
         if offset and num_records:
             num_records = "{} OFFSET {} RECORDS".format(num_records, offset)
         elif not offset and num_records:
@@ -495,8 +512,8 @@ class Cursor(object):
             num_records = "OFFSET {}".format(offset)
         else:
             raise Exception("Invalid option for num_records and offset!")
-        command = "COPY {} INTO {}{} FROM STDIN DELIMITERS '{}', '{}'".format(
-            num_records, table, cols_str, field_separator,
+        command = "COPY {} INTO {}{} FROM STDIN {} DELIMITERS '{}', '{}'".format(
+            num_records, table, table_col_str, input_cols_str, field_separator,
             record_separator)
         if string_quote is not None:
             command += ", '{}'".format(string_quote)
