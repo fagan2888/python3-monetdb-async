@@ -349,7 +349,8 @@ class Cursor(object):
                 try:
                     (self.__query_id, rowcount, columns, tuples) = line[2:].split()
                 except ValueError:
-                    (self.__query_id, rowcount, columns, tuples, extras) = line[2:].split()
+                    (self.__query_id, rowcount, columns, tuples, extras) = line[2:].split()[:5]
+
 
 
                 columns = int(columns)   # number of columns in result
