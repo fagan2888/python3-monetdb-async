@@ -35,7 +35,7 @@ setup(
     url='http://www.monetdb.org/',
     packages=['monetdb', 'monetdb.sql'],
     install_requires=[
-        'greenlet'
+        'greenlet==0.4.14'
     ],
     download_url='http://dev.monetdb.org/downloads/sources/Oct2014-SP2/python3-monetdb-11.19.9.tar.gz',
     classifiers=[
