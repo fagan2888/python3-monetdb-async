@@ -20,26 +20,29 @@
 import os
 from setuptools import setup
 
+
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-setup(name='python-monetdb-async',
-    version='11.19.9',
+
+setup(
+    name='dw-python-monetdb-async',
+    version='12.0.1',
     description='Native MonetDB client Python API',
     long_description=read('README.rst'),
     author='MonetDB BV',
     author_email='info@monetdb.org',
     url='http://www.monetdb.org/',
     packages=['monetdb', 'monetdb.sql'],
+    install_requires=[
+        'greenlet'
+    ],
     download_url='http://dev.monetdb.org/downloads/sources/Oct2014-SP2/python3-monetdb-11.19.9.tar.gz',
     classifiers=[
         "Topic :: Database",
         "Topic :: Database :: Database Engines/Servers",
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
-        "License :: Other/Proprietary License",
-        "Programming Language :: Python :: 2",
+        "License :: Other/Proprietary License"
     ]
 )
-
-

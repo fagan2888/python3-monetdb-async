@@ -23,6 +23,7 @@
 The MonetDB MAPI and SQL client Python API, with Async and COPY support
 =======================================================================
 
+This version of the Python 3 MonetDB client includes some additional features to support bulk copy operations
 
 Introduction
 ============
@@ -66,13 +67,13 @@ line by line example of the SQL API::
 
  > # import the SQL module
  > import monetdb.sql
- > 
+ >
  > # set up a connection. arguments below are the defaults
  > connection = monetdb.sql.connect(username="monetdb", password="monetdb", hostname="localhost", database="demo")
- > 
+ >
  > # create a cursor
  > cursor = connection.cursor()
- > 
+ >
  > # increase the rows fetched to increase performance (optional)
  > cursor.arraysize = 100
  >
@@ -99,7 +100,7 @@ line by line example of the SQL API::
   [4148, 'privileges', 1061, None, 0, True, 0, 0]]
  >
  > # Show the table meta data
- > cursor.description 
+ > cursor.description
  [('id', 'int', 4, 4, None, None, None),
   ('name', 'varchar', 12, 12, None, None, None),
   ('schema_id', 'int', 4, 4, None, None, None),
@@ -109,7 +110,7 @@ line by line example of the SQL API::
   ('commit_action', 'smallint', 1, 1, None, None, None),
   ('temporary', 'tinyint', 1, 1, None, None, None)]
 
- 
+
 If you would like to communicate with the database at a lower level
 you can use the MAPI library::
 
