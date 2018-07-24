@@ -27,7 +27,7 @@ def read(fname):
 
 setup(
     name='dw-python-monetdb-async',
-    version='12.0.1',
+    version='12.0.2',
     description='Native MonetDB client Python API',
     long_description=read('README.rst'),
     author='MonetDB BV',

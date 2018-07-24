@@ -31,7 +31,7 @@ class Connection(object):
 
     def __init__(self, database, hostname=None, port=50000, username="monetdb",
                  password="monetdb", unix_socket=None, autocommit=False,
-                 host=None, user=None, async=False):
+                 host=None, user=None, var_async=False):
         """ Set up a connection to a MonetDB SQL database.
 
         database    -- name of the database
@@ -42,7 +42,7 @@ class Connection(object):
         unix_socket -- socket to connect to. used when hostname not set
                             (default: "/tmp/.s.monetdb.50000")
         autocommit  -- enable/disable auto commit (default: False)
-        async      -- enable/disable asynchronous connection (default: False)
+        var_async      -- enable/disable asynchronous connection (default: False)
         """
 
         # The DB API spec is not specific about this
@@ -57,7 +57,7 @@ class Connection(object):
         self.mapi = mapi.Connection()
         self.mapi.connect(hostname=hostname, port=int(port), username=username,
                           password=password, database=database, language="sql",
-                          unix_socket=unix_socket, async=async)
+                          unix_socket=unix_socket, var_async=var_async)
         self.set_autocommit(autocommit)
         self.set_sizeheader(True)
         self.set_replysize(100)
@@ -167,10 +167,10 @@ class Connection(object):
     def fileno(self):
         """ get file descriptor for the connection socket, for use with async connections """
         return self.mapi.fileno()
-    
+
     def isasync(self):
         self.__mapi_check()
-        return self.mapi.async
+        return self.mapi.var_async
 
     def __repr__(self):
         return "<%s.%s object at 0x%x; url: 'monetdb://%s:%s/%s'>" % (

@@ -80,7 +80,7 @@ class Connection(object):
         self.connectionclosed = False
 
     def connect(self, database, username, password, language, hostname=None,
-                port=None, unix_socket=None, async=False):
+                port=None, unix_socket=None, var_async=False):
         """ setup connection to MAPI server
 
         unix_socket is used if hostname is not defined.
@@ -101,7 +101,7 @@ class Connection(object):
         self.database = database
         self.language = language
         self.unix_socket = unix_socket
-        self.async = async
+        self.var_async = var_async
 
         self.__isexecuting = False
 
@@ -211,7 +211,7 @@ class Connection(object):
                 raise ProgrammingError("unknown state: %s" % response)
 
     def poll(self):
-        if not self.async:
+        if not self.var_async:
             raise InterfaceError("Poll called on a synchronous connection")
         if not self.isexecuting():
             raise InterfaceError("No command is currently executing")
@@ -303,9 +303,9 @@ class Connection(object):
         result = BytesIO()
         count = bytes_
         while count > 0:
-            if self.async:
+            if self.var_async:
                 parent = greenlet.getcurrent().parent
-                # Switch to parent greenlet if async and no data ready to read
+                # Switch to parent greenlet if var_async and no data ready to read
                 while parent and not select([self.socket.fileno()], [], [], 0)[0]:
                     parent.switch(POLL_READ)
             recv = self.socket.recv(count)
@@ -335,8 +335,8 @@ class Connection(object):
             flag = struct.pack('<H', (length << 1) + last)
 
 
-            if self.async:
-                # Switch to parent greenlet if async and socket not ready to accept data
+            if self.var_async:
+                # Switch to parent greenlet if var_async and socket not ready to accept data
                 parent =greenlet.getcurrent().parent
                 while parent and not select([], [self.socket.fileno()], [], 0)[1]:
                     parent.switch(POLL_WRITE)
